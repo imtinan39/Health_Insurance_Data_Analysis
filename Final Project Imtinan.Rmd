@@ -1,0 +1,347 @@
+---
+title: "Final Project"
+author: "J.M. Imtinan Uddin"
+date: "2023-11-19"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Reading the dataset
+data <- read.csv("insurance.csv")
+
+# Inspecting the data structure and summary
+str(data)
+summary(data)
+
+# Calculating descriptive statistics
+# For numerical columns
+numerical_summary <- sapply(data, function(x) if(is.numeric(x)) summary(x))
+print(numerical_summary)
+
+# For categorical columns
+categorical_summary <- sapply(data, function(x) if(is.factor(x)) table(x))
+print(categorical_summary)
+
+# Checking for missing values
+missing_values_count <- sum(is.na(data))
+print(missing_values_count)
+
+# Visualizations
+# Histogram for 'age'
+ggplot(data, aes(x = age)) + 
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  theme_minimal() +
+  xlab("Age") +
+  ylab("Count") +
+  ggtitle("Histogram of Age")
+
+# Histogram for 'bmi'
+ggplot(data, aes(x = bmi)) + 
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  theme_minimal() +
+  xlab("BMI") +
+  ylab("Count") +
+  ggtitle("Histogram of BMI")
+
+# Histogram for 'children'
+ggplot(data, aes(x = children)) + 
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  theme_minimal() +
+  xlab("Children") +
+  ylab("Count") +
+  ggtitle("Histogram of Children")
+
+# Bar plot for 'smoker'
+ggplot(data, aes(x = smoker)) + 
+  geom_bar(fill = "blue", color = "black") +
+  theme_minimal() +
+  xlab("Smoker") +
+  ylab("Count") +
+  ggtitle("Frequency of Smokers vs Non-Smokers")
+
+
+# Histogram for 'charges'
+ggplot(data, aes(x = charges)) +
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
+  theme_minimal() +
+  xlab("Charges") +
+  ylab("Count") +
+  ggtitle("Histogram of Charges")
+
+# Count and visualization of 'sex' distribution
+sex_count_dplyr <- data %>% 
+  count(sex)
+
+ggplot(sex_count_dplyr, aes(x = sex, y = n, fill = sex)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  xlab("Sex") +
+  ylab("Count") +
+  ggtitle("Count of Males and Females in the Dataset")
+
+# Create scatter plots
+# Scatter plot of 'age' vs 'charges'
+ggplot(data, aes(x = age, y = charges)) +
+  geom_point() +
+  theme_minimal() +
+  xlab("Age") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of Age and Charges")
+
+# Scatter plot of 'bmi' vs 'charges'
+ggplot(data, aes(x = bmi, y = charges)) +
+  geom_point() +
+  theme_minimal() +
+  xlab("BMI") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of BMI and Charges")
+
+
+# Scatter plot of 'smoker' vs 'charges'
+ggplot(data, aes(x = smoker, y = charges, color = smoker)) +
+  geom_jitter(alpha = 0.5) +  # geom_jitter adds some noise to better visualize overlapping points
+  theme_minimal() +
+  xlab("Smoker") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of Smoker Status and Charges")
+
+# Box plot of 'smoker' vs 'charges'
+ggplot(data, aes(x = smoker, y = charges, fill = smoker)) +
+  geom_boxplot() +
+  theme_minimal() +
+  xlab("Smoker") +
+  ylab("Charges") +
+  ggtitle("Box Plot of Charges by Smoker Status")
+
+# Scatter plot of 'children' vs 'charges'
+ggplot(data, aes(x = children, y = charges, color = as.factor(children))) +
+  geom_jitter(alpha = 0.5) +  # Using geom_jitter to avoid overlapping points
+  theme_minimal() +
+  xlab("Number of Children") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of Number of Children and Charges")
+
+# Box plot of 'children' vs 'charges'
+ggplot(data, aes(x = as.factor(children), y = charges, fill = as.factor(children))) +
+  geom_boxplot() +
+  theme_minimal() +
+  xlab("Number of Children") +
+  ylab("Charges") +
+  ggtitle("Box Plot of Charges by Number of Children")
+
+# Scatter plot of 'region' vs 'charges'
+ggplot(data, aes(x = region, y = charges, color = region)) +
+  geom_jitter(alpha = 0.5) +  # Using geom_jitter to avoid overlapping points
+  theme_minimal() +
+  xlab("Region") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of Region and Charges")
+# Box plot of 'region' vs 'charges'
+ggplot(data, aes(x = region, y = charges, fill = region)) +
+  geom_boxplot() +
+  theme_minimal() +
+  xlab("Region") +
+  ylab("Charges") +
+  ggtitle("Box Plot of Charges by Region")
+
+
+# Scatter plot of 'sex' vs 'charges'
+ggplot(data, aes(x = sex, y = charges, color = sex)) +
+  geom_jitter(alpha = 0.5) +  # Using geom_jitter to avoid overlapping points
+  theme_minimal() +
+  xlab("Sex") +
+  ylab("Charges") +
+  ggtitle("Scatter Plot of Sex and Charges")
+
+# Box plot of 'sex' vs 'charges'
+ggplot(data, aes(x = sex, y = charges, fill = sex)) +
+  geom_boxplot() +
+  theme_minimal() +
+  xlab("Sex") +
+  ylab("Charges") +
+  ggtitle("Box Plot of Charges by Sex")
+
+#Hypothesis
+# Load necessary libraries
+library(ggplot2)
+
+# Categorizing age
+data$age_group <- cut(data$age, breaks = c(0, 30, 60, Inf), labels = c("Young", "Middle-Aged", "Old"))
+
+# ANOVA for age groups
+anova_age <- aov(charges ~ age_group, data = data)
+print(summary(anova_age))
+ggplot(data, aes(x = age_group, y = charges)) + 
+    geom_boxplot() +
+    ggtitle("Charges by Age Group") +
+    xlab("Age Group") +
+    ylab("Charges")
+
+# T-Test for sex
+t_test_sex <- t.test(charges ~ sex, data = data)
+print(t_test_sex)
+ggplot(data, aes(x = as.factor(sex), y = charges)) +
+    geom_boxplot() +
+    ggtitle("Charges by Sex") +
+    xlab("Sex") +
+    ylab("Charges")
+
+# Categorizing BMI
+data$bmi_category <- cut(data$bmi, breaks = c(0, 18.5, 25, 30, Inf), labels = c("Underweight", "Normal", "Overweight", "Obese"))
+
+# ANOVA for BMI categories
+anova_bmi <- aov(charges ~ bmi_category, data = data)
+print(summary(anova_bmi))
+ggplot(data, aes(x = bmi_category, y = charges)) + 
+    geom_boxplot() +
+    ggtitle("Charges by BMI Category") +
+    xlab("BMI Category") +
+    ylab("Charges")
+
+# ANOVA for number of children
+anova_children <- aov(charges ~ as.factor(children), data = data)
+print(summary(anova_children))
+ggplot(data, aes(x = as.factor(children), y = charges)) +
+    geom_boxplot() +
+    ggtitle("Charges by Number of Children") +
+    xlab("Number of Children") +
+    ylab("Charges")
+
+# T-Test for smoker status
+t_test_smoker <- t.test(charges ~ smoker, data = data)
+print(t_test_smoker)
+ggplot(data, aes(x = as.factor(smoker), y = charges)) +
+    geom_boxplot() +
+    ggtitle("Charges by Smoker Status") +
+    xlab("Smoker Status") +
+    ylab("Charges")
+
+# Assuming 'region' is already a factor in your data
+# ANOVA for region
+anova_region <- aov(charges ~ region, data = data)
+print(summary(anova_region))
+ggplot(data, aes(x = region, y = charges)) +
+    geom_boxplot() +
+    ggtitle("Charges by Region") +
+    xlab("Region") +
+    ylab("Charges")
+
+
+
+# Assuming your data frame is named 'data'
+data$sex <- ifelse(data$sex == "male", 1, 0)  # Assign 1 to male and 0 to female
+data$smoker <- ifelse(data$smoker == "yes", 1, 0)  # Assign 1 to smoker and 0 to non-smoker
+# Assuming your data frame is named 'data'
+# Drop 'column_to_drop'
+# One-hot encoding for 'region'
+region_dummies <- model.matrix(~ region - 1, data=data)  # The '- 1' removes intercept column
+colnames(region_dummies) <- gsub("region", "region", colnames(region_dummies))
+
+# Combine with original data
+data <- cbind(data, region_dummies)
+
+data <- subset(data, select = -c(age_group, bmi_category,region))
+
+# Assuming your data frame is named 'data'
+
+# Creating a linear regression model with 'charges' as the dependent variable
+
+# Load necessary libraries
+library(ggplot2)
+
+# Assuming your data frame 'data' is already loaded with appropriate columns
+# data <- read.csv('your_data_file.csv')
+
+# List of independent variables
+independent_vars <- c('age', 'sex', 'bmi', 'children', 'smoker', 
+                      'regionnortheast', 'regionnorthwest', 
+                      'regionsoutheast', 'regionsouthwest')
+
+# Perform pairwise linear regressions, print results, and show plot
+for (var in independent_vars) {
+  formula <- as.formula(paste('charges ~', var))
+  model <- lm(formula, data = data)
+
+  # Printing the summary
+  cat("\nRegression Summary for", var, ":\n")
+  print(summary(model))
+
+  # Plotting the regression line
+  plot_title <- paste("Regression Line for Charges vs", var)
+  p <- ggplot(data, aes_string(x = var, y = 'charges')) +
+       geom_point() +
+       geom_smooth(method = "lm", col = "blue") +
+       ggtitle(plot_title) +
+       theme_minimal()
+
+  # Explicitly print the plot
+  print(p)
+
+  # Pause to view each plot
+  if (var != tail(independent_vars, n=1)) {
+    cat("\nPress [Enter] to view the next plot...")
+    readline()
+  }
+}
+
+
+
+head(data)
+
+# Assuming 'ggplot2' is not installed, you can install it using:
+# install.packages("ggplot2")
+library(ggplot2)
+
+# Assuming your data frame is named 'data'
+
+# Extracting independent variable names from the linear regression model
+independent_variables <- names(model$coefficients)[-1]
+
+# Creating a list to store the plots
+plots <- list()
+
+# Creating separate plots for each independent variable
+for (variable in independent_variables) {
+  plot <- ggplot(data, aes_string(x = variable, y = "charges")) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, col = "blue") +
+    labs(title = paste("Linear Regression Plot for", variable), x = variable, y = "Charges")
+  
+  plots[[variable]] <- plot
+}
+
+# Save plots as PNG files
+for (variable in independent_variables) {
+  ggsave(paste("regression_plot_", variable, ".png", sep = ""), plot = plots[[variable]], width = 8, height = 6)
+}
+
+# Assuming your data frame is named 'data'
+correlation_matrix <- cor(data)
+
+# Displaying the head of the correlation matrix
+head(correlation_matrix)
+# Install the corrplot package if not already installed
+# install.packages("corrplot")
+
+# Load the corrplot library
+library(corrplot)
+
+# Visualize the correlation matrix
+corrplot(correlation_matrix, method = "color")
+
+
+
+
+
+```
